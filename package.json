@@ -1,0 +1,28 @@
+{
+  "name": "truffle-service-generator",
+  "version": "1.0.0",
+  "description": "utility to auto generate web3 functions for each truffle contract",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@truffle/contract-schema": "^3.0.20",
+    "fs-extra": "6.0.1",
+    "@truffle/contract-sources": "^0.1.7",
+    "web3": "1.2.1"
+  },
+  "keywords": [
+    "truffle",
+    "web3",
+    "ethereum",
+    "generate",
+    "smartcontract",
+    "javascript"
+  ],
+  "author": "Eman Herawy",
+  "license": "MIT"
+}
