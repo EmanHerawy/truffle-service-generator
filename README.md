@@ -16,3 +16,10 @@ This package generate js web3 functions for deployed  contracts
 # package used
 - @truffle/contract-schema to get contract abi
 - @truffle/contract-sources to get .sol contracts in the contract directory to only generate js functions for developed contracts
+
+# to use
+- truffle migrate 
+- npm run generate
+
+# NOTE
+this is inital setup and there are many edits should be done 
