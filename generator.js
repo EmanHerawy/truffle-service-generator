@@ -1,54 +1,30 @@
-const codeGen = require('./generator.json');
 const fs = require('fs');
 const generateDeployed = (contract, provider, path = null) => {
 
 
     let func = [];
-    codeGen.class[5] = !path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`;
-    codeGen.class[8] = `${contract.contractName}Service`;
-    codeGen.class[14] = `${provider}`;
-
+ 
     contract.abi.forEach((item) => {
         if (item.type == "function") {
 
             const isConstant = ["pure", "view"].includes(item.stateMutability) || item.constant; // new form // deprecated case
             if (isConstant) {
-                const tempFunc = [...codeGen.getterFunctions]
 
-                tempFunc[1] = item.name;
-                let param = {
-                    ...item.inputs.map(data => {
-                        return data.name;
-                    })
-                };
-                tempFunc[2] = item.inputs.lenght > 0 ? `(${param})` : "()";
-                tempFunc[6] = ".deployed();";
-                tempFunc[9] = item.name;
-                console.log(tempFunc[11], 'tempFunc[11]');
-
-                tempFunc[11] = item.inputs.lenght > 0 ? `(${param})` : "()";
-                tempFunc[15] = "";
-                console.log(tempFunc[11], 'tempFunc[11]');
+                let param = item.inputs.map(data => {
+                    return data.name;
+                });
+        console.log(param,'parm');
+        
+                const tempFunc = getterFuncTemplate(item.name,param)
 
                 func.push(tempFunc)
 
             } else {
-                const tempFunc = [...codeGen.setterFunctions]
 
-                tempFunc[1] = item.name;
-                let param = {
-                    ...item.inputs.map(data => {
-                        return data.name;
-                    })
-                };
-                console.log(param, '');
-
-                tempFunc[2] = item.inputs.lenght > 0 ?  `(${param},gas,from)` : "(gas,from)";
-                console.log(tempFunc[2], 'tempFunc[2]');
-
-                tempFunc[6] = ".deployed()";
-                tempFunc[9] = item.name;
-                tempFunc[11] = item.inputs.lenght > 0 ? `(${param})` : "()";
+                let param = item.inputs.map(data => {
+                    return data.name;
+                })
+                const tempFunc = setterFuncTemplate(item.name,param)
 
                 func.push(tempFunc)
 
@@ -58,10 +34,8 @@ const generateDeployed = (contract, provider, path = null) => {
 
         }
     });
-    codeGen.class[31] = func;
-
-    console.log(codeGen.class, 'codeGen');
-    return codeGen.class;
+  
+    return classTemplate(   !path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`, contract.contractName, provider,func  );
 
 }
 const WriteJsFile = async (path, content) => {
@@ -77,27 +51,12 @@ const WriteJsFile = async (path, content) => {
     //  return obj;
 
 }
-const generateNonDeployed = (contract) => {
-    contract.abi.forEach((item) => {
-        if (item.type == "function") {
 
-            const isConstant = ["pure", "view"].includes(item.stateMutability) || item.constant; // new form // deprecated case
-            if (isConstant) {
-
-            } else {
-
-            }
-
-
-
-        }
-    });
-}
 const generateFun = async (contract, provider, path = null, isDeployed) => {
     const outputPath = `./${contract.contractName}.js`
 
     if (isDeployed) {
-        const sourceCode = generateDeployed(contract, provider, path).toString().replace(/,/g, ' ');
+        const sourceCode = generateDeployed(contract, provider, path).toString().replace(/},/g, '}');
         return await WriteJsFile(outputPath, sourceCode);
     } else {
 
@@ -105,7 +64,97 @@ const generateFun = async (contract, provider, path = null, isDeployed) => {
 };
 
 
+const classTemplate=(path,name,providerUrl,functions)=>{
+return template=`
+import web3 from 'web3';
+import contract from 'truffle-contract';
 
+import contractArtifact from
+${path};
+
+export default class ${name}Service
+{
+
+constructor() { 
+
+this.web3Provider = new web3.providers.HttpProvider(
+${providerUrl}
+);
+
+this.web3 = new web3(this.web3Provider);
+
+this.initContract().then(s => {});
+
+}
+
+async initContract() {
+
+this.service = contract(contractArtifact);
+
+this.service.setProvider(this.web3Provider);
+
+}
+
+${functions}
+
+}`
+}
+const getterFuncTemplate=(name,PARAM,isDeployed=true,address=null)=>{
+    const status= isDeployed?`.deployed()`:`at(${address})`
+return template=`
+  async ${name}
+(${PARAM})
+{
+
+ const instance = await this.service${status}; 
+
+ const data = await instance.
+${name}.call
+(${PARAM})
+;
+
+return data;
+
+}`
+}
+const setterFuncTemplate=(name,funcParam,isDeployed=true,address=null)=>{
+    const status= isDeployed?`.deployed()`:`at(${address})`
+return template=`
+  async ${name}(${funcParam},_from,_gas)
+{
+
+ const instance = await this.service${status}
+
+ .then(instance => {
+ return instance.
+ ${name}
+ (
+  (${funcParam}),
+  {
+ 
+ from:_from,
+ 
+ gas: _gas
+ 
+  });  })
+ 
+ .then(res => {
+ 
+   return res;
+ 
+    })
+ 
+ .catch(e => {
+ 
+   console.log(e);
+ 
+    });
+ 
+   return result;
+ 
+ 
+ }`
+}
 
 module.exports = {
     generateFun
