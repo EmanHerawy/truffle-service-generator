@@ -102,16 +102,12 @@ ${functions}
 const getterFuncTemplate=(name,PARAM,isDeployed=true,address=null)=>{
     const status= isDeployed?`.deployed()`:`at(${address})`
 return template=`
-  async ${name}
-(${PARAM})
+  async ${name}(${PARAM})
 {
 
  const instance = await this.service${status}; 
 
- const data = await instance.
-${name}.call
-(${PARAM})
-;
+ const data = await instance.${name}.call(${PARAM});
 
 return data;
 
@@ -119,6 +115,7 @@ return data;
 }
 const setterFuncTemplate=(name,funcParam,isDeployed=true,address=null)=>{
     const status= isDeployed?`.deployed()`:`at(${address})`
+    const param= funcParam?`(${funcParam})`:``
 return template=`
   async ${name}(${funcParam},_from,_gas)
 {
@@ -126,17 +123,7 @@ return template=`
  const instance = await this.service${status}
 
  .then(instance => {
- return instance.
- ${name}
- (
-  (${funcParam}),
-  {
- 
- from:_from,
- 
- gas: _gas
- 
-  });  })
+ return instance. ${name}(${param},{ from:_from, gas: _gas  });  })
  
  .then(res => {
  
