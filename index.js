@@ -23,10 +23,16 @@ const changeState=()=>{
 };
 
 const serviceGen=async (contractPath,isDeployed)=>{
-const contract = await readArtifact(contractPath);
+   const dirFiles = await fse.readdir(contractPath)
+const   outputDir=  !await fse.pathExists('./service')? await fse.mkdir('./service'): './service';
+console.log(dirFiles,'dirFiles');
+dirFiles.map(async(file)=>{
+   const contract = await readArtifact(`${contractPath}/${file}`);
 
-const status= await   generateFun(contract,"'127.0.0.1:8545'", null,isDeployed);
-console.log(status,'jsCode');
+   const status= await   generateFun(contract,"'127.0.0.1:8545'", outputDir,contractPath,isDeployed);
+   console.log(status,'jsCode');
+})
+
 
 }
 
@@ -41,7 +47,7 @@ console.log(status,'jsCode');
 }
 
 
-serviceGen('build/contracts/Migrations.json',true).then(s=>{
+serviceGen('build/contracts',true).then(s=>{
    // console.log('reading file');
     
 })

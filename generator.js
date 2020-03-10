@@ -24,6 +24,7 @@ const generateDeployed = (contract, provider, path = null) => {
                 let param = item.inputs.map(data => {
                     return data.name;
                 })
+                console.log(param,'parm');
                 const tempFunc = setterFuncTemplate(item.name,param)
 
                 func.push(tempFunc)
@@ -52,8 +53,8 @@ const WriteJsFile = async (path, content) => {
 
 }
 
-const generateFun = async (contract, provider, path = null, isDeployed) => {
-    const outputPath = `./${contract.contractName}.js`
+const generateFun = async (contract, provider,outputDir, path = null, isDeployed) => {
+    const outputPath = `${outputDir}/${contract.contractName}.js`
 
     if (isDeployed) {
         const sourceCode = generateDeployed(contract, provider, path).toString().replace(/},/g, '}');
@@ -69,11 +70,9 @@ return template=`
 import web3 from 'web3';
 import contract from 'truffle-contract';
 
-import contractArtifact from
-${path};
+import contractArtifact from ${path}
 
-export default class ${name}Service
-{
+export default class ${name}Service{
 
 constructor() { 
 
@@ -102,8 +101,7 @@ ${functions}
 const getterFuncTemplate=(name,PARAM,isDeployed=true,address=null)=>{
     const status= isDeployed?`.deployed()`:`at(${address})`
 return template=`
-  async ${name}(${PARAM})
-{
+  async ${name}(${PARAM}){
 
  const instance = await this.service${status}; 
 
@@ -115,15 +113,14 @@ return data;
 }
 const setterFuncTemplate=(name,funcParam,isDeployed=true,address=null)=>{
     const status= isDeployed?`.deployed()`:`at(${address})`
-    const param= funcParam?`(${funcParam})`:``
+    const param= funcParam?`${funcParam},`:``
 return template=`
-  async ${name}(${funcParam},_from,_gas)
-{
+  async ${name}(${funcParam},_from,_gas){
 
  const instance = await this.service${status}
 
- .then(instance => {
- return instance. ${name}(${param},{ from:_from, gas: _gas  });  })
+ .then(_instance => {
+ return _instance. ${name}(${param}{ from:_from, gas: _gas  });  })
  
  .then(res => {
  
@@ -137,7 +134,7 @@ return template=`
  
     });
  
-   return result;
+   return instance;
  
  
  }`
