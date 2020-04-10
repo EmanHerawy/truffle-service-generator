@@ -1,5 +1,5 @@
-import arg from 'arg';
-var path = require("path");
+const arg = require ('arg');
+const path = require("path");
 
 const serviceGen= require( './index');
 
