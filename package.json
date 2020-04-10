@@ -13,7 +13,6 @@
   "scripts": {
     "generate": "node ./index",
     "test": "echo \"No test specified\""
-
   },
   "keywords": [
     "truffle",
