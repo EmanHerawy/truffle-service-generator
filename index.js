@@ -1,5 +1,6 @@
-const contractSource = require("@truffle/contract-sources");
-const {generateFun} = require('./generator');
+const {
+   generateFun
+} = require('./generator');
 const fse = require('fs-extra');
 
 
@@ -9,45 +10,40 @@ const fse = require('fs-extra');
 
 
 
-const generateDeployed=()=>{
-    
-}
-const generateNonDeployed=()=>{
 
-}
-const readState=()=>{
-    
-}
-const changeState=()=>{
 
-};
-
-const serviceGen=async (contractPath,isDeployed)=>{
+const serviceGen = async (contractPath, provider = "'127.0.0.1:8545'") => {
    const dirFiles = await fse.readdir(contractPath)
-const   outputDir=  !await fse.pathExists('./service')? await fse.mkdir('./service'): './service';
-console.log(dirFiles,'dirFiles');
-dirFiles.map(async(file)=>{
-   const contract = await readArtifact(`${contractPath}/${file}`);
+   if(!await fse.pathExists('./service')){
+      await fse.mkdirSync('./service')
+   }
+   const outputDir =  './service';
+   dirFiles.map(async (file) => {
 
-   const status= await   generateFun(contract,"'127.0.0.1:8545'", outputDir,contractPath,isDeployed);
-   console.log(status,'jsCode');
-})
+      const contract = await readArtifact(`${contractPath}/${file}`);
+      const isDeployed = Object.keys(contract.networks).length === 0 && contract.networks.constructor === Object;
+       const status = await generateFun(contract, provider, outputDir, contractPath, !isDeployed);
+      console.log(status,'serviceGen');
+
+   })
 
 
 }
 
 
- const readArtifact=async (filePath)=>{
- 
-        const obj = await fse.readJson(filePath, { throws: false })
-      
-     //   console.log(obj) // => null
-        return obj;
-      
+const readArtifact = async (filePath) => {
+
+   const obj = await fse.readJson(filePath, {
+      throws: false
+   })
+
+   //   console.log(obj) // => null
+   return obj;
+
 }
 
 
-serviceGen('build/contracts',true).then(s=>{
+serviceGen('build/contracts').then(s => {
    // console.log('reading file');
-    
+
 })

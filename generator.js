@@ -1,31 +1,29 @@
 const fs = require('fs');
-const generateDeployed = (contract, provider, path = null) => {
+const generateCode = (contract, provider, path = null, isDeployed) => {
 
 
     let func = [];
- 
-    contract.abi.forEach((item) => {
+
+    contract.abi.map((item) => {
         if (item.type == "function") {
+
+            let param = item.inputs.map(data => {
+                return data.name;
+            });
 
             const isConstant = ["pure", "view"].includes(item.stateMutability) || item.constant; // new form // deprecated case
             if (isConstant) {
 
-                let param = item.inputs.map(data => {
-                    return data.name;
-                });
-        console.log(param,'parm');
-        
-                const tempFunc = getterFuncTemplate(item.name,param)
+
+
+                const tempFunc = getterFuncTemplate(item.name, param, isDeployed)
 
                 func.push(tempFunc)
 
             } else {
 
-                let param = item.inputs.map(data => {
-                    return data.name;
-                })
-                console.log(param,'parm');
-                const tempFunc = setterFuncTemplate(item.name,param)
+
+                const tempFunc = setterFuncTemplate(item.name, param, isDeployed)
 
                 func.push(tempFunc)
 
@@ -35,14 +33,15 @@ const generateDeployed = (contract, provider, path = null) => {
 
         }
     });
-  
-    return classTemplate(   !path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`, contract.contractName, provider,func  );
+    console.log(contract.contractName, 'contract name ');
+
+    return classTemplate(!path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`, contract.contractName, provider, func);
 
 }
 const WriteJsFile = async (path, content) => {
 
     try {
-        const obj = await fs.writeFile(path, content, data => console.log(data))
+        const obj = await fs.writeFile(path, content, data => console.log(data, 'data written '))
         return true;
     } catch (error) {
         return false;
@@ -53,20 +52,10 @@ const WriteJsFile = async (path, content) => {
 
 }
 
-const generateFun = async (contract, provider,outputDir, path = null, isDeployed) => {
-    const outputPath = `${outputDir}/${contract.contractName}.js`
+const classTemplate = (path, name, providerUrl, functions) => {
+    console.log(name, 'classTemplate');
 
-    if (isDeployed) {
-        const sourceCode = generateDeployed(contract, provider, path).toString().replace(/},/g, '}');
-        return await WriteJsFile(outputPath, sourceCode);
-    } else {
-
-    }
-};
-
-
-const classTemplate=(path,name,providerUrl,functions)=>{
-return template=`
+    return template = `
 import web3 from 'web3';
 import contract from 'truffle-contract';
 
@@ -98,48 +87,52 @@ ${functions}
 
 }`
 }
-const getterFuncTemplate=(name,PARAM,isDeployed=true,address=null)=>{
-    const status= isDeployed?`.deployed()`:`at(${address})`
-return template=`
-  async ${name}(${PARAM}){
+const getterFuncTemplate = (name, parmas, isDeployed) => {
 
- const instance = await this.service${status}; 
+    const status = isDeployed ? `.deployed()` : `.at(constractAddress)`
+    let funcParam = [...parmas];
+    if (!isDeployed) {
+        funcParam.push("constractAddress");
 
- const data = await instance.${name}.call(${PARAM});
+    }
 
-return data;
+    return template = `
+  async ${name}(${funcParam}){
+
+        const instance = await this.service${status}; 
+
+        const data = await instance.${name}.call(${parmas});
+
+        return data;
 
 }`
 }
-const setterFuncTemplate=(name,funcParam,isDeployed=true,address=null)=>{
-    const status= isDeployed?`.deployed()`:`at(${address})`
-    const param= funcParam?`${funcParam},`:``
-return template=`
-  async ${name}(${funcParam},_from,_gas){
+const setterFuncTemplate = (name, params, isDeployed) => {
+    const status = isDeployed ? `.deployed()` : `.at(constractAddress)`
+    let txParams = ['_from', '_gas']
+    let funcParam = [...params, ...txParams];
+    if (!isDeployed) {
+        funcParam.push("constractAddress");
 
- const instance = await this.service${status}
+    }
 
- .then(_instance => {
- return _instance. ${name}(${param}{ from:_from, gas: _gas  });  })
- 
- .then(res => {
- 
-   return res;
- 
-    })
- 
- .catch(e => {
- 
-   console.log(e);
- 
-    });
- 
-   return instance;
+    return template = `
+  async ${name}(${funcParam}){    
+        const instance = await this.service${status};
+        const data = await  instance. ${name}(${[...params,...['{ from:_from, gas: _gas  }']]});  
+
+        return data;
  
  
  }`
 }
+const generateFun = async (contract, provider, outputDir, path = null, isDeployed) => {
+    const outputPath = `${outputDir}/${contract.contractName}.js`
+    const sourceCode = generateCode(contract, provider, path, isDeployed).toString().replace(/},/g, '}');
+    console.log('generateCode');
 
+    return await WriteJsFile(outputPath, sourceCode);
+};
 module.exports = {
     generateFun
 }
