@@ -1,5 +1,7 @@
 import arg from 'arg';
- import serviceGen from './index';
+var path = require("path");
+
+const serviceGen= require( './index');
 
 function parseArgumentsIntoOptions(rawArgs) {
   const args = arg(
@@ -17,7 +19,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     }
   );
   return {
-    contractPath: args['--dir'] || 'build/contracts',
+    contractsBuildDir: args['--dir'] || 'build/contracts',
     provider: args['--provider'] || "'http://127.0.0.1:8545'",
     help: args._[0]|| args['--help'],
   
@@ -25,9 +27,9 @@ function parseArgumentsIntoOptions(rawArgs) {
 }
 
 export async function cli(args) {
-  
+ 
   let options = parseArgumentsIntoOptions(args);
-  
+  options.contractsBuildDir= path.resolve(path.join(process.cwd(), options.contractsBuildDir))
   await serviceGen(options);
 }
 

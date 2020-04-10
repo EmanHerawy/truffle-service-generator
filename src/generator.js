@@ -1,5 +1,5 @@
 const fs = require('fs');
-const generateCode = (contract, provider, path = null, isDeployed) => {
+const generateCode = (contract, provider, path , isDeployed) => {
 
 
     let func = [];
@@ -34,7 +34,7 @@ const generateCode = (contract, provider, path = null, isDeployed) => {
         }
     });
 
-    return classTemplate(!path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`, contract.contractName, provider, func);
+    return classTemplate( `'${path}/${contract.contractName}.json';`, contract.contractName, provider, func);
 
 }
 const WriteJsFile = async (path, content) => {

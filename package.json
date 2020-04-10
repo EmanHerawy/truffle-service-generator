@@ -1,17 +1,19 @@
 {
-  "name": "@eman_herawy/truffle-web3-generator",
+  "name": "truffle-web3-generator",
   "version": "1.0.0",
   "description": "utility to auto generate web3 functions for each truffle contract",
   "main": "src/index.js",
   "bin": {
-    "@Eman_herawy/truffle-generate": "./bin/truffle-generate",
+    "truffle-plugin/truffle-generate": "./bin/truffle-generate",
     "truffle-generate": "./bin/truffle-generate"
   },
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "generate": "node ./index"
+    "generate": "node ./index",
+    "test": "echo \"No test specified\""
+
   },
   "keywords": [
     "truffle",
