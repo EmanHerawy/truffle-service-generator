@@ -9,12 +9,7 @@
   "scripts": {
     "generate": "node ./index"
   },
-  "dependencies": {
-    "@truffle/contract-schema": "^3.0.20",
-    "fs-extra": "6.0.1",
-    "@truffle/contract-sources": "^0.1.7",
-    "web3": "1.2.1"
-  },
+
   "keywords": [
     "truffle",
     "web3",
