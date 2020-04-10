@@ -36,6 +36,7 @@
   },
   "files": [
     "bin/",
-    "src/"
+    "src/",
+    "truffle-plugin.json"
   ]
 }
