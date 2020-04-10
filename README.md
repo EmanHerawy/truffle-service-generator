@@ -1,10 +1,13 @@
 # @truffle/generate
+=========
 
-This package generate js web3 functions for deployed  contracts 
+This plugin is to generate js web3 functions for all truffle contracts artifact 
 
-## this is an early stage contribution 
+Why do we need it ?
+------------
+To save your time :) 
 
-# Proposed steps to work on this package
+# Proposed steps to work on this plugin
 
 - run truffle migrate  if the contract is not compiled and migrated 
 - should create js file for each contract in contract dir
@@ -13,13 +16,11 @@ This package generate js web3 functions for deployed  contracts
 -  should use local network as default provider 
 -  user can specify the network provider with --network tag 
 
-# package used
-- @truffle/contract-schema to get contract abi
-- @truffle/contract-sources to get .sol contracts in the contract directory to only generate js functions for developed contracts
-
 # to use
 - truffle migrate 
 - npm run generate
 
 # NOTE
-this is inital setup and there are many edits should be done 
+this is inital setup and there are many edits should be done .
+
+
