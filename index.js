@@ -12,7 +12,7 @@ const fse = require('fs-extra');
 
 
 
-const serviceGen = async (contractPath, provider = "'127.0.0.1:8545'") => {
+const serviceGen = async (contractPath='build/contracts', provider = "'127.0.0.1:8545'") => {
    const dirFiles = await fse.readdir(contractPath)
    if(!await fse.pathExists('./service')){
       await fse.mkdirSync('./service')
@@ -41,9 +41,5 @@ const readArtifact = async (filePath) => {
    return obj;
 
 }
+module.exports = serviceGen
 
-
-serviceGen('build/contracts').then(s => {
-   // console.log('reading file');
-
-})
