@@ -12,18 +12,18 @@ const fse = require('fs-extra');
 
 
 
-const serviceGen = async (contractPath='build/contracts', provider = "'127.0.0.1:8545'") => {
+const serviceGen = async ({contractPath, provider} ) => {
+   
    const dirFiles = await fse.readdir(contractPath)
-   if(!await fse.pathExists('./service')){
-      await fse.mkdirSync('./service')
+   if(!await fse.pathExists('service')){
+      await fse.mkdirSync('service')
    }
-   const outputDir =  './service';
+   const outputDir =  'service';
    dirFiles.map(async (file) => {
 
       const contract = await readArtifact(`${contractPath}/${file}`);
       const isDeployed = Object.keys(contract.networks).length === 0 && contract.networks.constructor === Object;
        const status = await generateFun(contract, provider, outputDir, contractPath, !isDeployed);
-      console.log(status,'serviceGen');
 
    })
 
@@ -37,7 +37,6 @@ const readArtifact = async (filePath) => {
       throws: false
    })
 
-   //   console.log(obj) // => null
    return obj;
 
 }

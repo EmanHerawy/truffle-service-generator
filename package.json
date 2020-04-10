@@ -1,15 +1,18 @@
 {
-  "name": "@truffle/plugin-web3-generator",
+  "name": "@EmanHerawy/truffle-plugin-web3-generator",
   "version": "1.0.0",
   "description": "utility to auto generate web3 functions for each truffle contract",
-  "main": "index.js",
+  "main": "src/index.js",
+  "bin": {
+    "@Eman_herawy/truffle-generate": "./bin/truffle-generate",
+    "truffle-generate": "./bin/truffle-generate"
+  },
   "directories": {
     "test": "test"
   },
   "scripts": {
     "generate": "node ./index"
   },
-
   "keywords": [
     "truffle",
     "web3",
@@ -18,6 +21,19 @@
     "smartcontract",
     "javascript"
   ],
-  "author": "Eman Herawy",
-  "license": "MIT"
+  "author": "Eman Herawy <eman.herawy@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "arg": "^4.1.0",
+    "esm": "^3.2.18",
+    "fs-extra": "^9.0.0",
+    "ncp": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ]
 }

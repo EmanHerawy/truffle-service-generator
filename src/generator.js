@@ -33,7 +33,6 @@ const generateCode = (contract, provider, path = null, isDeployed) => {
 
         }
     });
-    console.log(contract.contractName, 'contract name ');
 
     return classTemplate(!path ? `'build/contracts/${contract.contractName}.json';` : `'${path}/${contract.contractName}.json';`, contract.contractName, provider, func);
 
@@ -41,19 +40,17 @@ const generateCode = (contract, provider, path = null, isDeployed) => {
 const WriteJsFile = async (path, content) => {
 
     try {
-        const obj = await fs.writeFile(path, content, data => console.log(data, 'data written '))
+        const obj = await fs.writeFile(path, content, data => console.log('Contract functions are written '))
         return true;
     } catch (error) {
         return false;
 
     }
-    //   console.log(obj) // => null
-    //  return obj;
+    
 
 }
 
 const classTemplate = (path, name, providerUrl, functions) => {
-    console.log(name, 'classTemplate');
 
     return template = `
 import web3 from 'web3';
