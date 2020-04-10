@@ -1,7 +1,7 @@
 # @truffle/generate
 =========
 
-This plugin is to generate js web3 functions for all truffle contracts artifact 
+This package is to generate js web3 functions for all truffle contracts artifact 
 
 Why do we need it ?
 ------------

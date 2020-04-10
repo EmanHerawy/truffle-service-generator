@@ -1,5 +1,5 @@
 {
-  "name": "@EmanHerawy/truffle-plugin-web3-generator",
+  "name": "@eman_herawy/truffle-web3-generator",
   "version": "1.0.0",
   "description": "utility to auto generate web3 functions for each truffle contract",
   "main": "src/index.js",
