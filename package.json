@@ -1,6 +1,6 @@
 {
   "name": "truffle-web3-generator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "utility to auto generate web3 functions for each truffle contract",
   "main": "src/index.js",
   "bin": {
