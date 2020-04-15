@@ -34,7 +34,7 @@ const generateCode = (contract, provider, path , isDeployed) => {
         }
     });
 
-    return classTemplate( `'${path}/${contract.contractName}.json';`, contract.contractName, provider, func);
+    return classTemplate( `'${path.substring(process.cwd().length)}/${contract.contractName}.json';`, contract.contractName, provider, func);
 
 }
 const WriteJsFile = async (path, content) => {

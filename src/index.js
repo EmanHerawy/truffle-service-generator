@@ -30,12 +30,15 @@ const serviceGen = async ({contractsBuildDir, provider} ) => {
          console.log(` reading ${contractsBuildDir}/${file} artifacts ...`);
          
       const contract = await readArtifact(`${contractsBuildDir}/${file}`);
-      const isDeployed = Object.keys(contract.networks).length === 0 && contract.networks.constructor === Object;
+    if(contract){  const isDeployed = Object.keys(contract.networks).length === 0 && contract.networks.constructor === Object;
       console.log(` contract ${contractsBuildDir}/${file} migration status is ${isDeployed}`);
 
       const status = await generateFun(contract, provider, outputDir, contractsBuildDir, !isDeployed);
-      console.log(`status ${status}`);
-
+      console.log(`status ${status}`);}
+      else{
+        console.error(" invalid files");
+        
+     }
 
    })
 
