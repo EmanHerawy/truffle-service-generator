@@ -1,5 +1,5 @@
 const fs = require('fs');
-const generateCode = (contract, provider, path , isDeployed) => {
+const generateCode = (contract, provider, path, isDeployed) => {
 
 
     let func = [];
@@ -8,15 +8,17 @@ const generateCode = (contract, provider, path , isDeployed) => {
         if (item.type == "function") {
 
             let param = item.inputs.map(data => {
-                return data.name;
+                return data.name == "" ? "Key" : data.name;
             });
 
+            const isNumaricOutput = checkOutput(item.outputs);
+            
             const isConstant = ["pure", "view"].includes(item.stateMutability) || item.constant; // new form // deprecated case
             if (isConstant) {
 
 
 
-                const tempFunc = getterFuncTemplate(item.name, param, isDeployed)
+                const tempFunc = getterFuncTemplate(item.name, param, isDeployed,isNumaricOutput)
 
                 func.push(tempFunc)
 
@@ -34,8 +36,21 @@ const generateCode = (contract, provider, path , isDeployed) => {
         }
     });
 
-    return classTemplate( `'${path.substring(process.cwd().length)}/${contract.contractName}.json';`, contract.contractName, provider, func);
+    return classTemplate(`'${path.substring(process.cwd().length)}/${contract.contractName}.json';`, contract.contractName, provider, func);
 
+}
+const checkOutput = (item) => {
+    if (item.length == 1) {
+        const dtaType = item[0]["type"];
+        
+        if (dtaType.substring(0, 2) == "ui" || dtaType.substring(0, 2) == "in") {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false
+    }
 }
 const WriteJsFile = async (path, content) => {
 
@@ -46,7 +61,7 @@ const WriteJsFile = async (path, content) => {
         return false;
 
     }
-    
+
 
 }
 
@@ -84,7 +99,7 @@ ${functions}
 
 }`
 }
-const getterFuncTemplate = (name, parmas, isDeployed) => {
+const getterFuncTemplate = (name, parmas, isDeployed,isNumaricOutput) => {
 
     const status = isDeployed ? `.deployed()` : `.at(constractAddress)`
     let funcParam = [...parmas];
@@ -92,6 +107,7 @@ const getterFuncTemplate = (name, parmas, isDeployed) => {
         funcParam.push("constractAddress");
 
     }
+const returnValue = isNumaricOutput?`return data.toNumber()`:`return data`
 
     return template = `
   async ${name}(${funcParam}){
@@ -100,7 +116,7 @@ const getterFuncTemplate = (name, parmas, isDeployed) => {
 
         const data = await instance.${name}.call(${parmas});
 
-        return data;
+       ${returnValue};
 
 }`
 }
@@ -126,7 +142,6 @@ const setterFuncTemplate = (name, params, isDeployed) => {
 const generateFun = async (contract, provider, outputDir, path = null, isDeployed) => {
     const outputPath = `${outputDir}/${contract.contractName}.js`
     const sourceCode = generateCode(contract, provider, path, isDeployed).toString().replace(/},/g, '}');
-    console.log('generateCode');
 
     return await WriteJsFile(outputPath, sourceCode);
 };
