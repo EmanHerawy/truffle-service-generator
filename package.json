@@ -27,7 +27,7 @@
   "dependencies": {
     "arg": "^4.1.0",
     "esm": "^3.2.18",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^10.0.0",
     "ncp": "^2.0.0"
   },
   "publishConfig": {
